@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using DAL.Interfaces;
+﻿using BackEnd.Models;
 using DAL.Implementations;
+using DAL.Interfaces;
 using Entities.Entities;
-using BackEnd.Models;
-
-// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using Microsoft.AspNetCore.Mvc;
 
 namespace BackEnd.Controllers
 {
@@ -24,6 +18,7 @@ namespace BackEnd.Controllers
             {
                 AccountId = account.AccountId,
                 AccountName = account.AccountName,
+                AccountCode = account.AccountCode,
                 AccountType = account.AccountType,
                 Conversion = account.Conversion
             };
@@ -35,18 +30,27 @@ namespace BackEnd.Controllers
             {
                 AccountId = account.AccountId,
                 AccountName = account.AccountName,
+                AccountCode = account.AccountCode,
                 AccountType = account.AccountType,
                 Conversion = account.Conversion
             };
         }
 
-        
+        AccountSelectResponseModel ConvertToSelect(TblAccountCatalog account)
+        {
+            return new AccountSelectResponseModel
+            {
+                id = account.AccountId,
+                text = account.AccountCode + " | " + account.AccountName,        
+            };
+        }
+
         public AccountController()
         {
             accountDAL = new AccountDALImpl(new AccountingSoftDBContext());
         }
 
-        
+
         [HttpGet]
         public JsonResult Get()
         {
@@ -67,9 +71,7 @@ namespace BackEnd.Controllers
             TblAccountCatalog account = accountDAL.Get(id);
             return new JsonResult(Convert(account));
         }
-        
 
-        
         [HttpPost]
         public JsonResult Post([FromBody] AccountModel account)
         {
@@ -77,9 +79,7 @@ namespace BackEnd.Controllers
             accountDAL.Add(entity);
             return new JsonResult(Convert(entity));
         }
-        
 
-        
         [HttpPut]
         public JsonResult Put([FromBody] AccountModel account)
         {
@@ -87,9 +87,7 @@ namespace BackEnd.Controllers
             accountDAL.Update(entity);
             return new JsonResult(Convert(entity));
         }
-        
 
-        
         [HttpDelete("{id}")]
         public JsonResult Delete(int id)
         {
@@ -97,6 +95,28 @@ namespace BackEnd.Controllers
             accountDAL.Remove(account);
             return new JsonResult(account);
         }
+
+        [HttpGet("Select")]
+        public JsonResult GetSelect()
+        {
+            List<TblAccountCatalog> accounts = new List<TblAccountCatalog>();
+            accounts = accountDAL.GetAll().ToList();
+
+            List<AccountSelectResponseModel> result = new List<AccountSelectResponseModel>();
+            foreach (TblAccountCatalog account in accounts)
+            {
+                result.Add(ConvertToSelect(account));
+            }
+
+            var response = new
+            {
+                results = result
+            };
+            
+            return new JsonResult(response);
+        }
+
+
     }
 }
 

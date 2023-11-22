@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Entities.Entities
 {
@@ -27,16 +24,17 @@ namespace Entities.Entities
         public virtual DbSet<TblReport> TblReports { get; set; } = null!;
         public virtual DbSet<TblRole> TblRoles { get; set; } = null!;
         public virtual DbSet<TblSeatApproval> TblSeatApprovals { get; set; } = null!;
+        public virtual DbSet<TblSeat> TblSeat { get; set; } = null!;
+        public virtual DbSet<TblSeatDetail> TblSeatDetail { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                //optionsBuilder.UseSqlServer("Server=.;Database=AccountingSoftDB;Integrated Security=True;User ID=SA;Password=Aljimo**04;Trusted_Connection=False;");
-                optionsBuilder.UseSqlServer("Server=.;Database=AccountingSoftDB;Integrated Security=True;");
+                optionsBuilder.UseSqlServer("Server=tcp:proyectorg.database.windows.net,1433;Initial Catalog=DB_RG;Persist Security Info=False;User ID=master;Password=proyectorg23*;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
             }
         }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -47,17 +45,23 @@ namespace Entities.Entities
 
                 entity.ToTable("tblAccountCatalog");
 
-                entity.Property(e => e.AccountId).HasColumnName("ACCOUNT_ID");
+                entity.Property(e => e.AccountId).HasColumnName("ACCOUNT_ID").ValueGeneratedOnAdd();
+
 
                 entity.Property(e => e.AccountName)
                     .HasMaxLength(50)
                     .HasColumnName("ACCOUNT_NAME");
 
+                entity.Property(e => e.AccountCode)
+                   .HasMaxLength(50)
+                   .HasColumnName("ACCOUNT_CODE");
+
                 entity.Property(e => e.AccountType)
                     .HasMaxLength(50)
                     .HasColumnName("ACCOUNT_TYPE");
 
-                entity.Property(e => e.Conversion).HasColumnName("CONVERSION");
+                entity.Property(e => e.Conversion)
+                    .HasColumnName("CONVERSION");
             });
 
             modelBuilder.Entity<TblAccountingSeat>(entity =>
@@ -347,6 +351,53 @@ namespace Entities.Entities
                     .HasForeignKey(d => d.SeatId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__tblSeatAp__SEAT___4CA06362");
+            });
+
+            modelBuilder.Entity<TblSeat>(entity =>
+            {
+
+                entity.ToTable("tblSeat");
+
+                entity.Property(e => e.ID).HasColumnName("ID").ValueGeneratedOnAdd();
+
+                entity.Property(e => e.DATE_SEAT)
+                    .HasColumnName("DATE_SEAT");
+
+                entity.Property(e => e.CURRENCY)
+                    .HasColumnName("CURRENCY");
+
+                entity.Property(e => e.EXCHANGE_RATE)
+                   .HasColumnName("EXCHANGE_RATE");
+
+                entity.Property(e => e.REFERENCE)
+                    .HasColumnName("REFERENCE");
+
+                entity.Property(e => e.CUSTOMER_ID)
+                    .HasColumnName("CUSTOMER_ID");
+
+                entity.Property(e => e.STATUS)
+                    .HasColumnName("STATUS");
+            });
+
+            modelBuilder.Entity<TblSeatDetail>(entity =>
+            {
+
+                entity.ToTable("tblSeatDetail");
+
+                entity.Property(e => e.ID).HasColumnName("ID").ValueGeneratedOnAdd();
+
+                entity.Property(e => e.SEAT_ID)
+                    .HasColumnName("SEAT_ID");
+
+                entity.Property(e => e.ACCOUNT_ID)
+                    .HasColumnName("ACCOUNT_ID");
+
+                entity.Property(e => e.AMOUNT)
+                   .HasColumnName("AMOUNT");
+
+                entity.Property(e => e.DESCRIPTION)
+                    .HasColumnName("DESCRIPTION");
+
             });
 
             OnModelCreatingPartial(modelBuilder);
