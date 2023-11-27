@@ -28,7 +28,7 @@ namespace BackEnd.Controllers
                 LastName = employee.LastName,
                 Username = employee.Username,
                 EmailAddress = employee.EmailAddress,
-                UserPassword = employee.UserPassword
+                Password = employee.Password,
             };
         }
 
@@ -41,6 +41,7 @@ namespace BackEnd.Controllers
                 LastName = employee.LastName,
                 Username = employee.Username,
                 EmailAddress = employee.EmailAddress,
+                Password = employee.Password,
             };
         }
 
@@ -53,8 +54,8 @@ namespace BackEnd.Controllers
         [HttpGet]
         public JsonResult Get()
         {
-            List<TblEmployee> customers = new List<TblEmployee>();
-            customers = employeeDAL.GetAll().ToList();
+            List<TblEmployee> employees = new List<TblEmployee>();
+            employees = employeeDAL.GetAll().ToList();
 
             List<EmployeeModel> result = new List<EmployeeModel>();
             foreach (TblEmployee employee in employees)

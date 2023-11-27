@@ -8,7 +8,7 @@ namespace BackEnd.Models
         public string LastName { get; set; } = null!;
         public string Username { get; set; } = null!;
         public string EmailAddress { get; set; } = null!;
-        public string UserPassword { get; set; } = null!;
+        public string Password { get; set; } = null!;
     }
 }
 
