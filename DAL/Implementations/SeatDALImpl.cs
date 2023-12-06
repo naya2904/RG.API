@@ -42,6 +42,7 @@ namespace DAL.Implementations
                 using (WorkUnit<TblSeat> unit = new WorkUnit<TblSeat>(context))
                 {
                     account = unit.genericDAL.Get(id);
+                    unit.Dispose();
                 }
                 return account;
             }
@@ -93,6 +94,48 @@ namespace DAL.Implementations
             {
                 using (WorkUnit<TblSeat> unit = new WorkUnit<TblSeat>(context))
                 {
+                    unit.genericDAL.Update(entity);
+                    result = unit.Complete();
+                }
+            }
+            catch
+            {
+                result = false;
+            }
+            return result;
+        }
+
+        public bool Delete(int id)
+        {
+            bool result = false;
+            TblSeat entity;
+            try
+            {
+                using (WorkUnit<TblSeat> unit = new WorkUnit<TblSeat>(context))
+                {
+                    entity = unit.genericDAL.Get(id);
+                    entity.STATUS = false;
+                    unit.genericDAL.Update(entity);
+                    result = unit.Complete();
+                }
+            }
+            catch
+            {
+                result = false;
+            }
+            return result;
+        }
+
+        public bool Post(int id)
+        {
+            bool result = false;
+            TblSeat entity;
+            try
+            {
+                using (WorkUnit<TblSeat> unit = new WorkUnit<TblSeat>(context))
+                {
+                    entity = unit.genericDAL.Get(id);
+                    entity.STATUS = true;
                     unit.genericDAL.Update(entity);
                     result = unit.Complete();
                 }
