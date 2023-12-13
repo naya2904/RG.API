@@ -4,25 +4,25 @@ using Entities.Entities;
 
 namespace DAL.Implementations
 {
-    public class EmployeeDALImpl : IEmployeeDAL
+    public class LogDALImpl : ILogDAL
     {
         AccountingSoftDBContext context;
 
-        public EmployeeDALImpl()
+        public LogDALImpl()
         {
             context = new AccountingSoftDBContext();
         }
 
-        public EmployeeDALImpl(AccountingSoftDBContext _Context)
+        public LogDALImpl(AccountingSoftDBContext _Context)
         {
             context = _Context;
         }
 
-        public bool Add(TblEmployee entity)
+        public bool Add(TblLog entity)
         {
             try
             {
-                using (WorkUnit<TblEmployee> unit = new WorkUnit<TblEmployee>(context))
+                using (WorkUnit<TblLog> unit = new WorkUnit<TblLog>(context))
                 {
                     unit.genericDAL.Add(entity);
                     unit.Complete();
@@ -35,16 +35,17 @@ namespace DAL.Implementations
             }
         }
 
-        public TblEmployee Get(int id)
+        public TblLog Get(int id)
         {
             try
             {
-                TblEmployee employee;
-                using (WorkUnit<TblEmployee> unit = new WorkUnit<TblEmployee>(context))
+                TblLog log;
+                using (WorkUnit<TblLog> unit = new WorkUnit<TblLog>(context))
                 {
-                    employee = unit.genericDAL.Get(id);
+                    log = unit.genericDAL.Get(id);
+                    unit.Dispose();
                 }
-                return employee;
+                return log;
             }
             catch
             {
@@ -52,30 +53,30 @@ namespace DAL.Implementations
             }
         }
 
-        public IEnumerable<TblEmployee> GetAll()
+        public IEnumerable<TblLog> GetAll()
         {
             try
             {
-                IEnumerable<TblEmployee> employees;
-                using (WorkUnit<TblEmployee> unit = new WorkUnit<TblEmployee>(context))
+                IEnumerable<TblLog> logs;
+                using (WorkUnit<TblLog> unit = new WorkUnit<TblLog>(context))
                 {
-                    employees = unit.genericDAL.GetAll();
+                    logs = unit.genericDAL.GetAll();
+                    unit.Dispose();
                 }
-                return employees;
+                return logs;
             }
-            catch(Exception ex)  
+            catch
             {
-                Console.WriteLine(ex.Message);
                 return null;
             }
         }
 
-        public bool Remove(TblEmployee entity)
+        public bool Remove(TblLog entity)
         {
             bool result = false;
             try
             {
-                using (WorkUnit<TblEmployee> unit = new WorkUnit<TblEmployee>(context))
+                using (WorkUnit<TblLog> unit = new WorkUnit<TblLog>(context))
                 {
                     unit.genericDAL.Remove(entity);
                     result = unit.Complete();
@@ -88,12 +89,12 @@ namespace DAL.Implementations
             return result;
         }
 
-        public bool Update(TblEmployee entity)
+        public bool Update(TblLog entity)
         {
             bool result = false;
             try
             {
-                using (WorkUnit<TblEmployee> unit = new WorkUnit<TblEmployee>(context))
+                using (WorkUnit<TblLog> unit = new WorkUnit<TblLog>(context))
                 {
                     unit.genericDAL.Update(entity);
                     result = unit.Complete();
@@ -105,42 +106,16 @@ namespace DAL.Implementations
             }
             return result;
         }
-
-
+             
         public bool Delete(int id)
         {
             bool result = false;
-            TblEmployee entity;
-            
+            TblLog entity;
             try
             {
-                using (WorkUnit<TblEmployee> unit = new WorkUnit<TblEmployee>(context))
+                using (WorkUnit<TblLog> unit = new WorkUnit<TblLog>(context))
                 {
                     entity = unit.genericDAL.Get(id);
-                    entity.Active = false;
-
-                    unit.genericDAL.Update(entity);
-                    result = unit.Complete();
-                }
-            }
-            catch
-            {
-                result = false;
-            }
-            return result;
-        }
-
-        public bool ChangePassword(int id,string password)
-        {
-            bool result = false;
-            TblEmployee entity;
-
-            try
-            {
-                using (WorkUnit<TblEmployee> unit = new WorkUnit<TblEmployee>(context))
-                {
-                    entity = unit.genericDAL.Get(id);
-                    entity.Password = password;
 
                     unit.genericDAL.Update(entity);
                     result = unit.Complete();

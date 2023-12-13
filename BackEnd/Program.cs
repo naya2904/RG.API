@@ -1,12 +1,8 @@
-﻿var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(
-        policy =>
-        {
-            policy.WithOrigins("https://proyectorg.azurewebsites.net");
-        });
-});
+﻿
+using BackEnd.Models;
+using BackEnd.Services;
+
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -14,13 +10,20 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
 var app = builder.Build();
 
+IConfiguration configuration = app.Configuration;
+IWebHostEnvironment environment = app.Environment;
+
+IServiceCollection services = new ServiceCollection();
+
+services.Configure<SmtpSettings>(configuration.GetSection("SmtpSettings"));
+services.AddSingleton<IEmailSenderService, EmailSenderService>();
+
 // Configure the HTTP request pipeline.
-
-
-    app.UseSwagger();
-    app.UseSwaggerUI();
+app.UseSwagger();
+app.UseSwaggerUI();
 
 
 app.UseHttpsRedirection();
